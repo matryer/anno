@@ -39,7 +39,9 @@ expander := anno.Expander{
 }
 src := "This is a #long string written by @mat containing links to https://downlist.io/."
 notes, err := anno.FindManyString(src, anno.URLs, anno.Mentions, anno.Hashtags)
-is.NoErr(err)
+if err != nil {
+	log.Fatalln(err)	
+}
 
 log.Println(expander.Expand(src, notes))
 ```
