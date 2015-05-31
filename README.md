@@ -1,6 +1,10 @@
 # anno
 Go package for text annotation.
 
+  * Highly concurrent
+  * Simple interface
+  * Very extensible
+
 ## Usage
 
 ```
