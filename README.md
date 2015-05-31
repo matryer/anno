@@ -22,7 +22,7 @@ Found a mention at [48:57]: "@mentions"
 Found a hashtag at [34:43]: "#hashtags"
 ```
 
-You can expand the notes using `anno.Expander`:
+You can expand (replace) occurances of the notes using `anno.Expander`:
 
 ```
 expander := anno.Expander{
