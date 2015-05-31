@@ -7,6 +7,28 @@ import (
 	"github.com/downlist/anno"
 )
 
+func TestFindMany(t *testing.T) {
+
+	is := is.New(t)
+	src := []byte("This is a #long string written by @mat containing links to https://downlist.io/.")
+
+	notes, err := anno.FindMany(src, anno.URLs, anno.Mentions, anno.Hashtags)
+	is.NoErr(err)
+	is.Equal(len(notes), 3)
+
+}
+
+func TestFindManyString(t *testing.T) {
+
+	is := is.New(t)
+	src := "This is a #long string written by @mat containing links to https://downlist.io/."
+
+	notes, err := anno.FindManyString(src, anno.URLs, anno.Mentions, anno.Hashtags)
+	is.NoErr(err)
+	is.Equal(len(notes), 3)
+
+}
+
 func TestFindString(t *testing.T) {
 	is := is.New(t)
 	s := "This is a #long string written by @mat containing links to https://downlist.io/."
