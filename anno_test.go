@@ -7,36 +7,13 @@ import (
 	"github.com/downlist/anno"
 )
 
-func TestMany(t *testing.T) {
-	is := is.New(t)
-	f1 := anno.FinderFunc(func(s []byte) ([]*anno.Note, error) {
-		return []*anno.Note{{
-			Val: []byte("one"),
-		}}, nil
-	})
-	f2 := anno.FinderFunc(func(s []byte) ([]*anno.Note, error) {
-		return []*anno.Note{{
-			Val: []byte("two"),
-		}}, nil
-	})
-	notes, err := anno.Many(f1, f2).Find([]byte(""))
-	is.NoErr(err)
-	is.Equal(len(notes), 2)
-}
-
 func TestFindString(t *testing.T) {
 	is := is.New(t)
-
 	s := "This is a #long string written by @mat containing links to https://downlist.io/."
-	finder := anno.Many(anno.Hashtags, anno.Mentions, anno.URLs)
-	notes, err := anno.FindString(finder, s)
+	notes, err := anno.FindString(anno.URLs, s)
 	is.NoErr(err)
-	is.Equal(len(notes), 3)
-
-	is.Equal(notes[0].String(), "#long")
-	is.Equal(notes[1].String(), "@mat")
-	is.Equal(notes[2].String(), "https://downlist.io/")
-
+	is.Equal(len(notes), 1)
+	is.Equal(notes[0].String(), "https://downlist.io/")
 }
 
 func TestFieldFinder(t *testing.T) {

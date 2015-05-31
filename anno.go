@@ -27,22 +27,6 @@ func FindString(finder Finder, s string) ([]*Note, error) {
 	return finder.Find([]byte(s))
 }
 
-// Many wraps multiple Finder types into one and its Find
-// method will run them all in order.
-func Many(finders ...Finder) Finder {
-	return FinderFunc(func(s []byte) ([]*Note, error) {
-		var notes []*Note
-		for _, finder := range finders {
-			ns, err := finder.Find(s)
-			if err != nil {
-				return notes, err
-			}
-			notes = append(notes, ns...)
-		}
-		return notes, nil
-	})
-}
-
 // FinderFunc represents a function capable of finding
 // notes.
 type FinderFunc func(s []byte) ([]*Note, error)
