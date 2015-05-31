@@ -5,6 +5,7 @@ Go package for text annotation.
   * Highly concurrent
   * Simple interface
   * Very extensible
+  * Looks nice in JSON (good for APIs)
 
 ## Usage
 

@@ -14,10 +14,10 @@ type Finder interface {
 // Note represents something interesting within
 // text.
 type Note struct {
-	Val   []byte
-	Start int
-	End   int
-	Kind  string
+	Val   []byte `json:"val"`
+	Start int    `json:"start"`
+	End   int    `json:"end"`
+	Kind  string `json:"kind"`
 }
 
 func (n *Note) String() string {
