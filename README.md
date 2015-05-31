@@ -1,4 +1,5 @@
-# anno
+# anno  [![GoDoc](https://godoc.org/github.com/downlist/anno?status.svg)](https://godoc.org/github.com/downlist/anno)
+
 Go package for text annotation.
 
   * Highly concurrent
