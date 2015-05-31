@@ -10,7 +10,7 @@ import (
 func TestURL(t *testing.T) {
 	is := is.New(t)
 	src := []byte("My website is https://downlist.io/ come and check it out - or go to http://www.codeandthat.com/ instead.")
-	matches, err := anno.URL(src)
+	matches, err := anno.URLs(src)
 	is.NoErr(err)
 	is.OK(matches)
 	is.Equal(len(matches), 2)

@@ -24,6 +24,21 @@ func TestMany(t *testing.T) {
 	is.Equal(len(notes), 2)
 }
 
+func TestFindString(t *testing.T) {
+	is := is.New(t)
+
+	s := "This is a #long string written by @mat containing links to https://downlist.io/."
+	finder := anno.Many(anno.Hashtags, anno.Mentions, anno.URLs)
+	notes, err := anno.FindString(finder, s)
+	is.NoErr(err)
+	is.Equal(len(notes), 3)
+
+	is.Equal(notes[0].String(), "#long")
+	is.Equal(notes[1].String(), "@mat")
+	is.Equal(notes[2].String(), "https://downlist.io/")
+
+}
+
 func TestFieldFinder(t *testing.T) {
 	is := is.New(t)
 
@@ -41,23 +56,23 @@ func TestFieldFinder(t *testing.T) {
 		}
 		return false, f
 	})
-	matches, err := fn.Find(s)
+	notes, err := fn.Find(s)
 	is.NoErr(err)
 
-	is.Equal(len(matches), 3)
-	is.Equal(matches[0].Val, []byte("field"))
-	is.Equal(matches[0].Start, 2)
-	is.Equal(matches[0].End, 2+len(matches[0].Val))
-	is.Equal(matches[0].Kind, "thiskind")
+	is.Equal(len(notes), 3)
+	is.Equal(notes[0].Val, []byte("field"))
+	is.Equal(notes[0].Start, 2)
+	is.Equal(notes[0].End, 2+len(notes[0].Val))
+	is.Equal(notes[0].Kind, "thiskind")
 
-	is.Equal(matches[1].Val, []byte("able"))
-	is.Equal(matches[1].Start, 23)
-	is.Equal(matches[1].End, 23+len(matches[1].Val))
-	is.Equal(matches[1].Kind, "thiskind")
+	is.Equal(notes[1].Val, []byte("able"))
+	is.Equal(notes[1].Start, 23)
+	is.Equal(notes[1].End, 23+len(notes[1].Val))
+	is.Equal(notes[1].Kind, "thiskind")
 
-	is.Equal(matches[2].Val, []byte("find"))
-	is.Equal(matches[2].Start, 8)
-	is.Equal(matches[2].End, 8+len(matches[2].Val))
-	is.Equal(matches[2].Kind, "thiskind")
+	is.Equal(notes[2].Val, []byte("find"))
+	is.Equal(notes[2].Start, 8)
+	is.Equal(notes[2].End, 8+len(notes[2].Val))
+	is.Equal(notes[2].Kind, "thiskind")
 
 }

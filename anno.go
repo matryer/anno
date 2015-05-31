@@ -21,6 +21,12 @@ func (n *Note) String() string {
 	return string(n.Val)
 }
 
+// FindString uses the Finder to find notes within
+// the specified string.
+func FindString(finder Finder, s string) ([]*Note, error) {
+	return finder.Find([]byte(s))
+}
+
 // Many wraps multiple Finder types into one and its Find
 // method will run them all in order.
 func Many(finders ...Finder) Finder {
@@ -64,7 +70,7 @@ func (e ErrNoMatch) Error() string {
 // ErrNoMatch will be returned.
 func FieldFunc(kind string, fn func(b []byte) (bool, []byte)) FinderFunc {
 	return func(src []byte) ([]*Note, error) {
-		var matches []*Note
+		var notes []*Note
 		fields := bytes.Fields(src)
 		for _, f := range fields {
 			if ok, match := fn(f); ok {
@@ -74,7 +80,7 @@ func FieldFunc(kind string, fn func(b []byte) (bool, []byte)) FinderFunc {
 					// appearing in the match.
 					return nil, ErrNoMatch(match)
 				}
-				matches = append(matches, &Note{
+				notes = append(notes, &Note{
 					Val:   match,
 					Start: s,
 					End:   s + len(match),
@@ -82,6 +88,6 @@ func FieldFunc(kind string, fn func(b []byte) (bool, []byte)) FinderFunc {
 				})
 			}
 		}
-		return matches, nil
+		return notes, nil
 	}
 }

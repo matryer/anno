@@ -2,15 +2,15 @@ package anno
 
 import "bytes"
 
-var punctuation = "."
+var punctuation = ".?"
 
 func trimPunctuation(s []byte) []byte {
 	return bytes.TrimRight(s, punctuation)
 }
 
 // URL finds web addresses.
-var URL = FieldFunc("url", func(s []byte) (bool, []byte) {
-	return bytes.HasPrefix(s, []byte("http")) || bytes.HasPrefix(s, []byte("www")), s
+var URLs = FieldFunc("url", func(s []byte) (bool, []byte) {
+	return bytes.HasPrefix(s, []byte("http")) || bytes.HasPrefix(s, []byte("www")), trimPunctuation(s)
 })
 
 // Mentions finds @twitter style mentions.
