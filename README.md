@@ -56,7 +56,7 @@ This is a #long string written by <a href="https://downlist.io/@mat">@mat</a> co
 
 ## Emoji
 
-Emoji lives in its own sub-package and works on a fork. We are waiting to hear back regarding a [pull request](https://github.com/kyokomi/emoji/pull/2) on [github.com/kyokomi/emoji](https://github.com/kyokomi/emoji/pull/2).
+Emoji support lives in its own package due to the external dependency.
 
 ```
 src := "You make me want to :smile: you know!"
@@ -69,3 +69,5 @@ log.Println(expander.Expand(src, notes))
 ```
 
 Will replace `:smile:` with the appropriate emoji character.
+
+  * We are waiting to hear back regarding a [pull request](https://github.com/kyokomi/emoji/pull/2) on [github.com/kyokomi/emoji](https://github.com/kyokomi/emoji/pull/2) before this will be released.
