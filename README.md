@@ -1,4 +1,4 @@
-# anno  [![GoDoc](https://godoc.org/github.com/downlist/anno?status.svg)](https://godoc.org/github.com/downlist/anno)
+# anno  [![GoDoc](https://godoc.org/github.com/matryer/anno?status.svg)](https://godoc.org/github.com/matryer/anno)
 
 Go package for text annotation.
 

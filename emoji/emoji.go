@@ -4,7 +4,7 @@ import (
 	"bytes"
 
 	"github.com/matryer/anno"
-	"github.com/matryer/emoji"
+	"gopkg.in/kyokomi/emoji.v1"
 )
 
 // Find finds raw :emoji: fields.
