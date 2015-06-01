@@ -69,5 +69,3 @@ log.Println(expander.Expand(src, notes))
 ```
 
 Will replace `:smile:` with the appropriate emoji character.
-
-  * We are waiting to hear back regarding a [pull request](https://github.com/kyokomi/emoji/pull/2) on [github.com/kyokomi/emoji](https://github.com/kyokomi/emoji/pull/2) before this will be released.
