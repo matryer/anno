@@ -2,10 +2,12 @@ package anno
 
 import "bytes"
 
-var punctuation = ".?"
+// Punctuation is a string of common punctuation and quotation characters.
+var Punctuation = `.?!'"`
 
-func trimPunctuation(s []byte) []byte {
-	return bytes.TrimRight(s, punctuation)
+// TrimPunctuation trims off Punctuation characters.
+func TrimPunctuation(s []byte) []byte {
+	return bytes.Trim(s, Punctuation)
 }
 
 var tlds = [][]byte{
@@ -34,7 +36,7 @@ var tlds = [][]byte{
 
 // URL finds web addresses.
 var URLs = FieldFunc("url", func(s []byte) (bool, []byte) {
-	trimmedS := trimPunctuation(s)
+	trimmedS := TrimPunctuation(s)
 	if bytes.HasPrefix(s, []byte("http")) || bytes.HasPrefix(s, []byte("www")) {
 		return true, trimmedS
 	}
@@ -48,10 +50,12 @@ var URLs = FieldFunc("url", func(s []byte) (bool, []byte) {
 
 // Mentions finds @twitter style mentions.
 var Mentions = FieldFunc("mention", func(s []byte) (bool, []byte) {
-	return bytes.HasPrefix(s, []byte("@")), trimPunctuation(s)
+	trimmedS := TrimPunctuation(s)
+	return bytes.HasPrefix(trimmedS, []byte("@")), TrimPunctuation(trimmedS)
 })
 
 // Hashtags finds #hashtags.
 var Hashtags = FieldFunc("hashtag", func(s []byte) (bool, []byte) {
-	return bytes.HasPrefix(s, []byte("#")), trimPunctuation(s)
+	trimmedS := TrimPunctuation(s)
+	return bytes.HasPrefix(trimmedS, []byte("#")), TrimPunctuation(trimmedS)
 })

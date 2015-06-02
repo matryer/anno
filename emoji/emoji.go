@@ -9,7 +9,8 @@ import (
 
 // Find finds raw :emoji: fields.
 var Find = anno.FieldFunc("emoji", func(s []byte) (bool, []byte) {
-	return bytes.HasPrefix(s, []byte(":")) && bytes.HasSuffix(s, []byte(":")), s
+	trimmedS := anno.TrimPunctuation(s)
+	return bytes.HasPrefix(trimmedS, []byte(":")) && bytes.HasSuffix(trimmedS, []byte(":")), trimmedS
 })
 
 // Expand takes a single emoji source and returns the actual

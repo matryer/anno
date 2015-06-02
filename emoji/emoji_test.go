@@ -30,3 +30,22 @@ func TestEmoji(t *testing.T) {
 	is.Equal(e.Expand(string(src), notes), "🍺 makes me want to 😄 you know.")
 
 }
+
+func TestEmojiWithPunctuation(t *testing.T) {
+	is := is.New(t)
+	src := []byte(":beer:?")
+	notes, err := emoji.Find(src)
+	is.NoErr(err)
+	is.OK(notes)
+	is.Equal(len(notes), 1)
+	is.Equal(notes[0].Val, []byte(":beer:"))
+	is.Equal(notes[0].Start, 0)
+	is.Equal(notes[0].End(), 0+len(notes[0].Val))
+	is.Equal(notes[0].Kind, "emoji")
+
+	e := anno.Expander{
+		"emoji": emoji.Expand,
+	}
+	is.Equal(e.Expand(string(src), notes), "🍺?")
+
+}
