@@ -17,7 +17,7 @@ func TestEmoji(t *testing.T) {
 	is.Equal(len(notes), 1)
 	is.Equal(notes[0].Val, []byte(":smile:"))
 	is.Equal(notes[0].Start, 20)
-	is.Equal(notes[0].End, 20+len(notes[0].Val))
+	is.Equal(notes[0].End(), 20+len(notes[0].Val))
 	is.Equal(notes[0].Kind, "emoji")
 
 	e := anno.Expander{
