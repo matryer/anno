@@ -3,7 +3,7 @@ package anno
 import "bytes"
 
 // Punctuation is a string of common punctuation and quotation characters.
-var Punctuation = `.?!'"`
+var Punctuation = `.?!'",;`
 
 // TrimPunctuation trims off Punctuation characters.
 func TrimPunctuation(s []byte) []byte {
