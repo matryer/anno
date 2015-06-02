@@ -8,16 +8,27 @@ import (
 // Finder represents types capable of finding
 // notes.
 type Finder interface {
-	Find(s []byte) ([]*Note, error)
+	Find(s []byte) (Notes, error)
 }
+
+// Notes is a sortable slice of Note objects.
+type Notes []*Note
+
+func (n Notes) Len() int           { return len(n) }
+func (n Notes) Swap(i, j int)      { n[i], n[j] = n[j], n[i] }
+func (n Notes) Less(i, j int) bool { return n[i].Start < n[j].Start }
 
 // Note represents something interesting within
 // text.
 type Note struct {
 	Val   []byte `json:"val"`
 	Start int    `json:"start"`
-	End   int    `json:"end"`
 	Kind  string `json:"kind"`
+}
+
+// End calculates the end position of this note.
+func (n *Note) End() int {
+	return n.Start + len(n.Val)
 }
 
 func (n *Note) String() string {
@@ -26,18 +37,18 @@ func (n *Note) String() string {
 
 // FindString uses the Finder to find notes within
 // the specified string.
-func FindString(finder Finder, s string) ([]*Note, error) {
+func FindString(finder Finder, s string) (Notes, error) {
 	return finder.Find([]byte(s))
 }
 
 // FinderFunc represents a function capable of finding
 // notes.
-type FinderFunc func(s []byte) ([]*Note, error)
+type FinderFunc func(s []byte) (Notes, error)
 
 var _ Finder = FinderFunc(nil)
 
 // Find calls the FinderFunc.
-func (fn FinderFunc) Find(s []byte) ([]*Note, error) {
+func (fn FinderFunc) Find(s []byte) (Notes, error) {
 	return fn(s)
 }
 
@@ -52,13 +63,13 @@ func (e ErrNoMatch) Error() string {
 
 // FindManyString runs all finders against the source and returns a
 // slice of notes or an error.
-func FindManyString(src string, finders ...Finder) ([]*Note, error) {
+func FindManyString(src string, finders ...Finder) (Notes, error) {
 	return FindMany([]byte(src), finders...)
 }
 
 // FindMany runs all finders against the source and returns a
 // slice of notes or an error.
-func FindMany(src []byte, finders ...Finder) ([]*Note, error) {
+func FindMany(src []byte, finders ...Finder) (Notes, error) {
 
 	noteChan := make(chan *Note, 0)
 	errChan := make(chan error, 0)
@@ -86,7 +97,7 @@ func FindMany(src []byte, finders ...Finder) ([]*Note, error) {
 		close(noteChan)
 	}()
 
-	var notes []*Note
+	var notes Notes
 	var err error
 loop:
 	for {
@@ -112,8 +123,8 @@ loop:
 // The returned []byte must be contained in the source string, otherwise
 // ErrNoMatch will be returned.
 func FieldFunc(kind string, fn func(b []byte) (bool, []byte)) FinderFunc {
-	return func(src []byte) ([]*Note, error) {
-		var notes []*Note
+	return func(src []byte) (Notes, error) {
+		var notes Notes
 		fields := bytes.Fields(src)
 		noteChan := make(chan *Note, 0)
 		errChan := make(chan error, 0)
@@ -133,7 +144,6 @@ func FieldFunc(kind string, fn func(b []byte) (bool, []byte)) FinderFunc {
 						noteChan <- &Note{
 							Val:   match,
 							Start: s,
-							End:   s + len(match),
 							Kind:  kind,
 						}
 					}

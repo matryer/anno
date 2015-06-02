@@ -20,7 +20,7 @@ func TestExpander(t *testing.T) {
 		},
 	}
 	src := "This is a #long string written by @mat containing links to https://downlist.io/."
-	notes, err := anno.FindManyString(src, anno.URLs, anno.Mentions, anno.Hashtags)
+	notes, err := anno.FindManyString(src, anno.Mentions, anno.URLs, anno.Hashtags)
 	is.NoErr(err)
 
 	out := expander.Expand(src, notes)
