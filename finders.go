@@ -37,11 +37,11 @@ var tlds = [][]byte{
 // URL finds web addresses.
 var URLs = FieldFunc("url", func(s []byte) (bool, []byte) {
 	trimmedS := TrimPunctuation(s)
-	if bytes.HasPrefix(s, []byte("http")) || bytes.HasPrefix(s, []byte("www")) {
+	if bytes.HasPrefix(trimmedS, []byte("http")) || bytes.HasPrefix(trimmedS, []byte("www")) {
 		return true, trimmedS
 	}
 	for _, tld := range tlds {
-		if bytes.HasSuffix(s, tld) {
+		if bytes.HasSuffix(trimmedS, tld) {
 			return true, trimmedS
 		}
 	}
