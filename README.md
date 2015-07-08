@@ -11,7 +11,7 @@ Go package for text annotation.
 
 ```
 s := "Find http://www.websites.com/ and #hashtags and @mentions easily"
-notes, err := anno.FindManyString(s, anno.URLs, anno.Mentions, anno.Hashtags)
+notes, err := anno.FindManyString(s, anno.Emails, anno.URLs, anno.Mentions, anno.Hashtags)
 if err != nil {
 	log.Fatalln(err)
 }
