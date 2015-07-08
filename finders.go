@@ -34,9 +34,26 @@ var tlds = [][]byte{
 	[]byte(".mil"),
 }
 
+// Emails finds email addresses.
+var Emails = FieldFunc("email", func(s []byte) (bool, []byte) {
+	trimmedS := TrimPunctuation(s)
+	if !bytes.Contains(s, []byte("@")) { // not email address
+		return false, s
+	}
+	for _, tld := range tlds {
+		if bytes.HasSuffix(s, tld) {
+			return true, trimmedS
+		}
+	}
+	return false, s
+})
+
 // URL finds web addresses.
 var URLs = FieldFunc("url", func(s []byte) (bool, []byte) {
 	trimmedS := TrimPunctuation(s)
+	if bytes.Contains(s, []byte("@")) { // email address
+		return false, s
+	}
 	if bytes.HasPrefix(s, []byte("http")) || bytes.HasPrefix(s, []byte("www")) {
 		return true, trimmedS
 	}

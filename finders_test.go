@@ -24,6 +24,19 @@ func TestURL(t *testing.T) {
 	is.Equal(matches[1].Kind, "url")
 }
 
+func TestEmail(t *testing.T) {
+	is := is.New(t)
+	src := []byte("Send me an email to please-reply@downlist.io if you like.")
+	matches, err := anno.Emails(src)
+	is.NoErr(err)
+	is.OK(matches)
+	is.Equal(len(matches), 1)
+	is.Equal(matches[0].Val, []byte("please-reply@downlist.io"))
+	is.Equal(matches[0].Start, 20)
+	is.Equal(matches[0].End(), 20+len(matches[0].Val))
+	is.Equal(matches[0].Kind, "email")
+}
+
 func TestMention(t *testing.T) {
 	is := is.New(t)
 	src := []byte("Call me @matryer on Twitter, or follow @downlistapp instead.")
