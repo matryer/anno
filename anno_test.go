@@ -30,6 +30,17 @@ func TestFindManyString(t *testing.T) {
 
 }
 
+func TestFindManyURLsWithPunctuation(t *testing.T) {
+
+	is := is.New(t)
+	src := "What do you think about Facebook.com and Yahoo.com and Google.com?"
+
+	notes, err := anno.FindManyString(src, anno.URLs)
+	is.NoErr(err)
+	is.Equal(len(notes), 3)
+
+}
+
 func TestFindString(t *testing.T) {
 	is := is.New(t)
 	s := "This is a #long string written by @mat containing links to https://downlist.io/."
