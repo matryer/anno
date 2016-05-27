@@ -68,11 +68,11 @@ var URLs = FieldFunc("url", func(s []byte) (bool, []byte) {
 // Mentions finds @twitter style mentions.
 var Mentions = FieldFunc("mention", func(s []byte) (bool, []byte) {
 	trimmedS := TrimPunctuation(s)
-	return bytes.HasPrefix(trimmedS, []byte("@")), TrimPunctuation(trimmedS)
+	return bytes.HasPrefix(trimmedS, []byte("@")), trimmedS
 })
 
 // Hashtags finds #hashtags.
 var Hashtags = FieldFunc("hashtag", func(s []byte) (bool, []byte) {
 	trimmedS := TrimPunctuation(s)
-	return bytes.HasPrefix(trimmedS, []byte("#")), TrimPunctuation(trimmedS)
+	return bytes.HasPrefix(trimmedS, []byte("#")), trimmedS
 })

@@ -1,6 +1,6 @@
 # anno  [![GoDoc](https://godoc.org/github.com/matryer/anno?status.svg)](https://godoc.org/github.com/matryer/anno)
 
-Go package for text annotation.
+Go package for text annotation. [Read the article covering anno](https://medium.com/@matryer/annotating-text-in-go-and-package-design-ae43f9dccc6d)
 
   * Highly concurrent
   * Simple interface
