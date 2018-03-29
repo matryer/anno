@@ -1,6 +1,7 @@
 package anno_test
 
 import (
+	"sort"
 	"testing"
 
 	"github.com/cheekybits/is"
@@ -14,6 +15,7 @@ func TestURL(t *testing.T) {
 	is.NoErr(err)
 	is.OK(matches)
 	is.Equal(len(matches), 2)
+	sort.Sort(matches)
 	is.Equal(matches[0].Val, []byte("https://downlist.io/"))
 	is.Equal(matches[0].Start, 14)
 	is.Equal(matches[0].End(), 14+len(matches[0].Val))
@@ -44,6 +46,7 @@ func TestMention(t *testing.T) {
 	is.NoErr(err)
 	is.OK(matches)
 	is.Equal(len(matches), 2)
+	sort.Sort(matches)
 	is.Equal(matches[0].Val, []byte("@matryer"))
 	is.Equal(matches[0].Start, 8)
 	is.Equal(matches[0].End(), 8+len(matches[0].Val))
@@ -61,6 +64,7 @@ func TestHashtag(t *testing.T) {
 	is.NoErr(err)
 	is.OK(matches)
 	is.Equal(len(matches), 2)
+	sort.Sort(matches)
 	is.Equal(matches[0].Val, []byte("#golang"))
 	is.Equal(matches[0].Start, 22)
 	is.Equal(matches[0].End(), 22+len(matches[0].Val))
