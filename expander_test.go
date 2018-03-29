@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/cheekybits/is"
-	"github.com/matryer/anno"
+	"github.com/huumn/anno"
 )
 
 func TestExpander(t *testing.T) {
