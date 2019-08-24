@@ -3,6 +3,8 @@ package anno
 import (
 	"bytes"
 	"sync"
+	"unicode"
+	"unicode/utf8"
 )
 
 // Finder represents types capable of finding
@@ -117,6 +119,107 @@ loop:
 
 }
 
+var asciiSpace = [256]uint8{'\t': 1, '\n': 1, '\v': 1, '\f': 1, '\r': 1, ' ': 1}
+
+/* An outright copy of bytes.Fields that returns a map of index=>field
+	so that we don't have bugs created by duplicate fields and
+	bytes.Index */
+func annoFields(s []byte) map[int][]byte {
+	// First count the fields.
+	// This is an exact count if s is ASCII, otherwise it is an approximation.
+	n := 0
+	wasSpace := 1
+	// setBits is used to track which bits are set in the bytes of s.
+	setBits := uint8(0)
+	for i := 0; i < len(s); i++ {
+		r := s[i]
+		setBits |= r
+		isSpace := int(asciiSpace[r])
+		n += wasSpace & ^isSpace
+		wasSpace = isSpace
+	}
+
+	if setBits >= utf8.RuneSelf {
+		// Some runes in the input slice are not ASCII.
+		return annoFieldsFunc(s, unicode.IsSpace)
+	}
+
+	// ASCII fast path
+	a := make(map[int][]byte, n)
+	na := 0
+	fieldStart := 0
+	i := 0
+	// Skip spaces in the front of the input.
+	for i < len(s) && asciiSpace[s[i]] != 0 {
+		i++
+	}
+	fieldStart = i
+	for i < len(s) {
+		if asciiSpace[s[i]] == 0 {
+			i++
+			continue
+		}
+		a[fieldStart] = s[fieldStart:i:i]
+		na++
+		i++
+		// Skip spaces in between fields.
+		for i < len(s) && asciiSpace[s[i]] != 0 {
+			i++
+		}
+		fieldStart = i
+	}
+	if fieldStart < len(s) { // Last field might end at EOF.
+		a[fieldStart] = s[fieldStart:len(s):len(s)]
+	}
+	return a
+}
+
+func annoFieldsFunc(s []byte, f func(rune) bool) map[int][]byte {
+	// A span is used to record a slice of s of the form s[start:end].
+	// The start index is inclusive and the end index is exclusive.
+	type span struct {
+		start int
+		end   int
+	}
+	spans := make([]span, 0, 32)
+
+	// Find the field start and end indices.
+	wasField := false
+	fromIndex := 0
+	for i := 0; i < len(s); {
+		size := 1
+		r := rune(s[i])
+		if r >= utf8.RuneSelf {
+			r, size = utf8.DecodeRune(s[i:])
+		}
+		if f(r) {
+			if wasField {
+				spans = append(spans, span{start: fromIndex, end: i})
+				wasField = false
+			}
+		} else {
+			if !wasField {
+				fromIndex = i
+				wasField = true
+			}
+		}
+		i += size
+	}
+
+	// Last field might end at EOF.
+	if wasField {
+		spans = append(spans, span{fromIndex, len(s)})
+	}
+
+	// Create subslices from recorded field indices.
+	a := make(map[int][]byte, len(spans))
+	for _, span := range spans {
+		a[span.start] = s[span.start:span.end:span.end]
+	}
+
+	return a
+}
+
 // FieldFunc returns a FinderFunc that finds notes on a per field basis.
 // The fn returns true if it's a match, and optionally a subset of the the
 // match.
@@ -125,17 +228,17 @@ loop:
 func FieldFunc(kind string, fn func(b []byte) (bool, []byte)) FinderFunc {
 	return func(src []byte) (Notes, error) {
 		var notes Notes
-		fields := bytes.Fields(src)
+		fields := annoFields(src)
 		noteChan := make(chan *Note, 0)
 		errChan := make(chan error, 0)
 
 		go func() {
 			var wg sync.WaitGroup
-			for _, f := range fields {
+			for i, f := range fields {
 				wg.Add(1)
-				go func(f []byte) {
+				go func(i int, f []byte) {
 					if ok, match := fn(f); ok {
-						s := bytes.Index(src, match)
+						s := bytes.Index(f, match)
 						if s == -1 {
 							// true was returned without the returned bytes
 							// appearing in the match.
@@ -143,12 +246,12 @@ func FieldFunc(kind string, fn func(b []byte) (bool, []byte)) FinderFunc {
 						}
 						noteChan <- &Note{
 							Val:   match,
-							Start: s,
+							Start: i+s,
 							Kind:  kind,
 						}
 					}
 					wg.Done()
-				}(f)
+				}(i, f)
 			}
 			wg.Wait()
 			close(noteChan)
