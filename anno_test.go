@@ -9,7 +9,6 @@ import (
 )
 
 func TestFindMany(t *testing.T) {
-
 	is := is.New(t)
 	src := []byte("This is a #long string written by @mat containing links to https://downlist.io/.")
 
@@ -20,7 +19,6 @@ func TestFindMany(t *testing.T) {
 }
 
 func TestFindManyString(t *testing.T) {
-
 	is := is.New(t)
 	src := "This is a #long string written by @mat containing links to https://downlist.io/."
 
@@ -30,8 +28,19 @@ func TestFindManyString(t *testing.T) {
 
 }
 
-func TestFindManyURLsWithPunctuation(t *testing.T) {
+func TestFindManyStringDuplicates(t *testing.T) {
+	is := is.New(t)
+	src := `If I @mention and then I @mention again, I hope to get different start values`
 
+	notes, err := anno.FindManyString(src, anno.Mentions)
+	is.NoErr(err)
+	is.Equal(len(notes), 2)
+
+	is.True(notes[0].Start < notes[1].Start)
+
+}
+
+func TestFindManyURLsWithPunctuation(t *testing.T) {
 	is := is.New(t)
 	src := "What do you think about Facebook.com and Yahoo.com and Google.com?"
 
@@ -71,38 +80,38 @@ func TestFieldFinder(t *testing.T) {
 	is.NoErr(err)
 
 	is.Equal(len(notes), 3)
-	is.Equal(notes[0].Val, []byte("field"))
+	is.Equal(string(notes[0].Val), "field")
 	is.Equal(notes[0].Start, 2)
 	is.Equal(notes[0].End(), 2+len(notes[0].Val))
 	is.Equal(notes[0].Kind, "thiskind")
 
-	is.Equal(notes[1].Val, []byte("able"))
+	is.Equal(string(notes[1].Val), "able")
 	is.Equal(notes[1].Start, 23)
 	is.Equal(notes[1].End(), 23+len(notes[1].Val))
 	is.Equal(notes[1].Kind, "thiskind")
 
-	is.Equal(notes[2].Val, []byte("find"))
-	is.Equal(notes[2].Start, 8)
-	is.Equal(notes[2].End(), 8+len(notes[2].Val))
+	is.Equal(string(notes[2].Val), "find")
+	is.Equal(notes[2].Start, 31)
+	is.Equal(notes[2].End(), 31+len(notes[2].Val))
 	is.Equal(notes[2].Kind, "thiskind")
 
 	// sort the notes
 	sort.Sort(notes)
 
 	is.Equal(len(notes), 3)
-	is.Equal(notes[0].Val, []byte("field"))
+	is.Equal(string(notes[0].Val), "field")
 	is.Equal(notes[0].Start, 2)
 	is.Equal(notes[0].End(), 2+len(notes[0].Val))
 	is.Equal(notes[0].Kind, "thiskind")
 
-	is.Equal(notes[1].Val, []byte("find"))
-	is.Equal(notes[1].Start, 8)
-	is.Equal(notes[1].End(), 8+len(notes[2].Val))
+	is.Equal(string(notes[1].Val), "able")
+	is.Equal(notes[1].Start, 23)
+	is.Equal(notes[1].End(), 23+len(notes[1].Val))
 	is.Equal(notes[1].Kind, "thiskind")
 
-	is.Equal(notes[2].Val, []byte("able"))
-	is.Equal(notes[2].Start, 23)
-	is.Equal(notes[2].End(), 23+len(notes[1].Val))
+	is.Equal(string(notes[2].Val), "find")
+	is.Equal(notes[2].Start, 31)
+	is.Equal(notes[2].End(), 31+len(notes[2].Val))
 	is.Equal(notes[2].Kind, "thiskind")
 
 }

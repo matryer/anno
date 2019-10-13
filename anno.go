@@ -87,11 +87,12 @@ func FindMany(src []byte, finders ...Finder) (Notes, error) {
 // ErrNoMatch will be returned.
 func FieldFunc(kind string, fn func(b []byte) (bool, []byte)) FinderFunc {
 	return func(src []byte) (Notes, error) {
+		var pos int
 		var notes Notes
 		fields := bytes.Fields(src)
 		for _, f := range fields {
 			if ok, match := fn(f); ok {
-				s := bytes.Index(src, match)
+				s := bytes.Index(src[pos:], match) + pos
 				if s == -1 {
 					// true was returned without the returned bytes
 					// appearing in the match.
@@ -103,6 +104,7 @@ func FieldFunc(kind string, fn func(b []byte) (bool, []byte)) FinderFunc {
 					Kind:  kind,
 				})
 			}
+			pos += len(f) + 1
 		}
 		return notes, nil
 	}
