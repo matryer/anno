@@ -12,6 +12,7 @@ func TrimPunctuation(s []byte) []byte {
 
 var tlds = [][]byte{
 	[]byte(".com"),
+	[]byte(".dev"),
 	[]byte(".net"),
 	[]byte(".org"),
 	[]byte(".edu"),
