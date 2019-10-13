@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/cheekybits/is"
 	"github.com/matryer/anno"
+	"github.com/matryer/is"
 )
 
 func TestExpander(t *testing.T) {

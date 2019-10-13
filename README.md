@@ -2,7 +2,6 @@
 
 Go package for text annotation. [Read the article covering anno](https://medium.com/@matryer/annotating-text-in-go-and-package-design-ae43f9dccc6d)
 
-  * Highly concurrent
   * Simple interface
   * Very extensible
   * Looks nice in JSON (good for APIs)

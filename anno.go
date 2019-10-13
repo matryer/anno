@@ -2,7 +2,6 @@ package anno
 
 import (
 	"bytes"
-	"sync"
 )
 
 // Finder represents types capable of finding
@@ -70,51 +69,15 @@ func FindManyString(src string, finders ...Finder) (Notes, error) {
 // FindMany runs all finders against the source and returns a
 // slice of notes or an error.
 func FindMany(src []byte, finders ...Finder) (Notes, error) {
-
-	noteChan := make(chan *Note, 0)
-	errChan := make(chan error, 0)
-
-	go func() {
-		var wg sync.WaitGroup
-		for _, finder := range finders {
-			wg.Add(1)
-
-			go func(finder Finder) {
-
-				notes, err := finder.Find(src)
-				if err != nil {
-					errChan <- err
-				}
-				for _, note := range notes {
-					noteChan <- note
-				}
-
-				wg.Done()
-			}(finder)
-
+	var allNotes Notes
+	for _, finder := range finders {
+		notes, err := finder.Find(src)
+		if err != nil {
+			return nil, err
 		}
-		wg.Wait()
-		close(noteChan)
-	}()
-
-	var notes Notes
-	var err error
-loop:
-	for {
-		select {
-		case note := <-noteChan:
-			if note == nil {
-				break loop
-			}
-			notes = append(notes, note)
-		case e := <-errChan:
-			err = e
-			break loop
-		}
+		allNotes = append(allNotes, notes...)
 	}
-
-	return notes, err
-
+	return allNotes, nil
 }
 
 // FieldFunc returns a FinderFunc that finds notes on a per field basis.
@@ -126,50 +89,21 @@ func FieldFunc(kind string, fn func(b []byte) (bool, []byte)) FinderFunc {
 	return func(src []byte) (Notes, error) {
 		var notes Notes
 		fields := bytes.Fields(src)
-		noteChan := make(chan *Note, 0)
-		errChan := make(chan error, 0)
-
-		go func() {
-			var wg sync.WaitGroup
-			for _, f := range fields {
-				wg.Add(1)
-				go func(f []byte) {
-					if ok, match := fn(f); ok {
-						s := bytes.Index(src, match)
-						if s == -1 {
-							// true was returned without the returned bytes
-							// appearing in the match.
-							errChan <- ErrNoMatch(match)
-						}
-						noteChan <- &Note{
-							Val:   match,
-							Start: s,
-							Kind:  kind,
-						}
-					}
-					wg.Done()
-				}(f)
-			}
-			wg.Wait()
-			close(noteChan)
-		}()
-
-		// read notes and build up the array
-		var err error
-	loop:
-		for {
-			select {
-			case note := <-noteChan:
-				if note == nil {
-					break loop
+		for _, f := range fields {
+			if ok, match := fn(f); ok {
+				s := bytes.Index(src, match)
+				if s == -1 {
+					// true was returned without the returned bytes
+					// appearing in the match.
+					return nil, ErrNoMatch(match)
 				}
-				notes = append(notes, note)
-			case e := <-errChan:
-				err = e
-				break loop
+				notes = append(notes, &Note{
+					Val:   match,
+					Start: s,
+					Kind:  kind,
+				})
 			}
 		}
-
-		return notes, err
+		return notes, nil
 	}
 }

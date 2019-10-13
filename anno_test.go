@@ -4,8 +4,8 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/cheekybits/is"
 	"github.com/matryer/anno"
+	"github.com/matryer/is"
 )
 
 func TestFindMany(t *testing.T) {
