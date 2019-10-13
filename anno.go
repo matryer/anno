@@ -103,6 +103,7 @@ func FieldFunc(kind string, fn func(b []byte) (bool, []byte)) FinderFunc {
 					Start: s,
 					Kind:  kind,
 				})
+
 			}
 			pos += len(f) + 1
 		}
