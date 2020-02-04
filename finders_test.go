@@ -54,6 +54,23 @@ func TestMention(t *testing.T) {
 	is.Equal(matches[1].Kind, "mention")
 }
 
+func TestMention2(t *testing.T) {
+	is := is.New(t)
+	src := []byte("@matryer on Twitter, or follow @downlistapp instead.")
+	matches, err := anno.Mentions(src)
+	is.NoErr(err)
+	is.True(matches != nil)
+	is.Equal(len(matches), 2)
+	is.Equal(matches[0].Val, []byte("@matryer"))
+	is.Equal(matches[0].Start, 0)
+	is.Equal(matches[0].End(), len(matches[0].Val))
+	is.Equal(matches[0].Kind, "mention")
+	is.Equal(matches[1].Val, []byte("@downlistapp"))
+	is.Equal(matches[1].Start, 31)
+	is.Equal(matches[1].End(), 31+len(matches[1].Val))
+	is.Equal(matches[1].Kind, "mention")
+}
+
 func TestHashtag(t *testing.T) {
 	is := is.New(t)
 	src := []byte("I love programming in #golang - it's #lovely.")

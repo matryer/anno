@@ -7,7 +7,7 @@ var Punctuation = `.?!'",;`
 
 // TrimPunctuation trims off Punctuation characters.
 func TrimPunctuation(s []byte) []byte {
-	return bytes.Trim(s, Punctuation)
+	return bytes.TrimRight(s, Punctuation)
 }
 
 var tlds = [][]byte{
